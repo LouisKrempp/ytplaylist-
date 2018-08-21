@@ -1,4 +1,4 @@
-# ytplaylist-
+# ytplaylist++
 Goes through a Youtube channel to obtain its playlists' video list
 
 This piece of software goes through Youtube to fetch playlists and its videos from a user, creates a text file containing all videos' name.
