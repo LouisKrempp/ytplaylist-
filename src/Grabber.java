@@ -8,7 +8,8 @@ import org.jsoup.nodes.Element;
 public class Grabber {
 
 	// Variables
-	// We need a real browser user agent or Google will block our request with a 403 - Forbidden
+	// We need a real browser user agent or Google will block our request with a 403
+	// - Forbidden
 	// Agent is using old youtube css; tested with user agent Opera 12.14
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36";
 	private static final String ytURL = "https://www.youtube.com/user/";
@@ -17,7 +18,8 @@ public class Grabber {
 	private HashMap<String, String> playlistsTitleURLHM = new HashMap();
 	private HashMap<String, ArrayList<String>> videosByPlHM = new HashMap();
 	private boolean success = false;
-	
+	HashMap<String, Integer> deletedVideosCount = new HashMap<String, Integer>();
+
 	public Grabber(String username) {
 		try {
 			this.username = username;
@@ -27,14 +29,15 @@ public class Grabber {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public Document AppBuilder() throws IOException {
 		try {
-			if(username.isEmpty()) throw new Exception("User not referenced");
-			
+			if (username.isEmpty())
+				throw new Exception("User not referenced");
+
 			String URL = ytURL + username + "/playlists?view=1&flow=grid";
 			System.out.println("Youtube channel link : " + URL);
-			
+
 			// Fetch the page
 			this.doc = Jsoup.connect(URL).userAgent(USER_AGENT).get();
 			this.saveURL();
@@ -42,7 +45,7 @@ public class Grabber {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		
+
 		return this.doc;
 	}
 
@@ -54,17 +57,20 @@ public class Grabber {
 			playlistsTitleURLHM.put(title, url);
 		}
 	}
-	
-	public void saveVideos(ArrayList<String> playlistsChecked) throws IOException{
-		for(String s : playlistsChecked) {
+
+	public void saveVideos(ArrayList<String> playlistsChecked) throws IOException {
+		for (String s : playlistsChecked) {
+			int deletedVids = 0;
 			String URL = playlistsTitleURLHM.get(s);
 			this.doc = Jsoup.connect(URL).userAgent(USER_AGENT).get();
-			
+
 			ArrayList<String> videoSet = new ArrayList();
 			for (Element result : this.doc.select(".pl-video-title > a")) {
 				final String title = result.text();
-				if(!title.startsWith("[")) videoSet.add(title);
+				if (title.startsWith("[")) deletedVids++;
+				videoSet.add(title);
 			}
+			deletedVideosCount.put(s, deletedVids);
 			videosByPlHM.put(s, videoSet);
 		}
 	}
@@ -96,7 +102,11 @@ public class Grabber {
 	public boolean isSuccess() {
 		return success;
 	}
+
+	public HashMap<String, Integer> getDeletedVideosCount() {
+		return deletedVideosCount;
+	}
+
 	
-	
-	
+
 }

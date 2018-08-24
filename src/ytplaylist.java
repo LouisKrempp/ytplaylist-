@@ -10,6 +10,8 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.eclipse.core.runtime.Path;
+
 import javax.swing.JLabel;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
@@ -24,6 +26,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.text.*;
 import java.util.ArrayList;
@@ -84,7 +88,6 @@ public class ytplaylist {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setLocation(new Point(500, 500));
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(new Color(51, 51, 51));
 		frame.setBackground(new Color(102, 102, 102));
@@ -275,6 +278,9 @@ public class ytplaylist {
 			for (String s : playlistsChecked) {
 				// Creates file
 				String name = dest + s + ".txt";
+				File testDeletion = new File(dest + s + " (Some are deleted).txt");
+				if(gFor.getDeletedVideosCount().get(s) == 0 && testDeletion.exists()) testDeletion.delete();
+				if(gFor.getDeletedVideosCount().get(s) > 0) name = dest + s + " (Some are deleted).txt";
 				File playlistFile = new File(name);
 				if (!playlistFile.exists()) {
 					playlistFile.createNewFile();
@@ -290,11 +296,15 @@ public class ytplaylist {
 				int ite = 0;
 				Date dNow = new Date();
 				SimpleDateFormat ft = new SimpleDateFormat("E dd.MM.yyyy 'at' hh:mm a zzz");
-
+				String videoNumber = Integer.toString(gFor.getVideosByPlHM().get(s).size());
+				if(gFor.getVideosByPlHM().get(s).size() >= 100) {
+					videoNumber = "100+";
+				}
 				// Writing Header
-				bw.write("Playlist : \t" + s + sep);
-				bw.write("Date : \t\t" + ft.format(dNow) + sep);
-				bw.write("# of videos : \t" + gFor.getVideosByPlHM().get(s).size() + sep);
+				bw.write("Playlist : \t\t" + s + sep);
+				bw.write("Date : \t\t\t" + ft.format(dNow) + sep);
+				bw.write("# of videos : \t\t" + videoNumber + sep);
+				bw.write("# of deleted videos : \t" + gFor.getDeletedVideosCount().get(s) + sep);
 				bw.write("------------------------------------------------------" + sep + sep);
 
 				// Writing videos
