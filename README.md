@@ -14,6 +14,7 @@ The GUI allows you to create these text files easily. Just enter a Youtube Chann
 
 <b>TODO :</b>
 - Working .exe (For some reason, launch4j doesn't create running GUI .exe on Eclipse ?)
+- Better way to track deleted/private videos (instead of just searching "[" in the first caracter of its title)
 - If you have any suggestion let me know
 
 Contact : louis.krempp@tuta.io
